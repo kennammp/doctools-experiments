@@ -1,2 +1,2 @@
-# cudo-compute-v2-docs-test
-Repository for experimental cudo compute v2 docs site
+# cudo-compute-beta-docs-test
+Repository for cudo compute beta experimental docs site
