@@ -44,7 +44,7 @@ const config = {
     /** @type {import('@docusaurus/preset-classic').ThemeConfig} */
     ({
       navbar: {
-        title: 'Cudo Compute Beta Docs DRAFT',
+        title: 'Compute Beta Docs DRAFT',
         logo: {
           alt: 'My Site Logo',
           src: 'img/CudosIconTransparent.png',
