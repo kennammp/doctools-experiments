@@ -22,6 +22,7 @@ const config = {
       /** @type {import('@docusaurus/preset-classic').Options} */
       ({
         docs: {
+          routeBasePath: '/',
           sidebarPath: require.resolve('./sidebars.js'),
           // Please change this to your repo.
           editUrl: 'https://github.com/facebook/docusaurus/tree/main/packages/create-docusaurus/templates/shared/',
@@ -43,17 +44,19 @@ const config = {
     /** @type {import('@docusaurus/preset-classic').ThemeConfig} */
     ({
       navbar: {
-        title: 'My Site',
+        title: 'Cudo Compute Beta Docs DRAFT',
         logo: {
           alt: 'My Site Logo',
-          src: 'img/logo.svg',
+          src: 'img/CudosIconTransparent.png',
         },
+        
         items: [
+          /*
           {
-            type: 'doc',
-            docId: 'intro',
-            position: 'left',
-            label: 'Tutorial',
+          type: 'doc',
+          docId: 'intro',
+          position: 'left',
+          label: 'Tutorial',
           },
           {to: '/blog', label: 'Blog', position: 'left'},
           {
@@ -61,7 +64,9 @@ const config = {
             label: 'GitHub',
             position: 'right',
           },
+          */
         ],
+      /*
       },
       footer: {
         style: 'dark',
@@ -107,7 +112,9 @@ const config = {
           },
         ],
         copyright: `Copyright © ${new Date().getFullYear()} My Project, Inc. Built with Docusaurus.`,
-      },
+        */
+      }, 
+        
       prism: {
         theme: lightCodeTheme,
         darkTheme: darkCodeTheme,
