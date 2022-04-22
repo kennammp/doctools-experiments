@@ -40,6 +40,21 @@ const config = {
         },
       }), 
     ],
+    [
+     "redocusaurus",
+     {
+       specs: [
+         {
+           routePath: "/api/specs/apispec",
+           spec: "petstore.yaml",
+         },
+         {
+          routePath: "/api/specs/apispec2",
+          spec: "uspto.yaml",
+         },
+       ],
+     },
+   ],
   ],
 
   themeConfig:
