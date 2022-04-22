@@ -50,12 +50,12 @@ docs: [
           {
           type: 'link',
           label: 'Petstore',
-          href: 'http://localhost:3000/api/specs/apispec',
+          href: 'https://cdcompute-beta-draft-docs.netlify.app/api/specs/apispec',
           },
           {
             type: 'link',
             label: 'USPTO',
-            href: 'http://localhost:3000/api/specs/apispec2',
+            href: 'https://cdcompute-beta-draft-docs.netlify.app/api/specs/apispec2',
             },
           ],
   },
