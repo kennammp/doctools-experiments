@@ -1,0 +1,217 @@
+openapi: 3.0.0
+info:
+  title: Cudo Compute Market
+  version: 1.0.0
+tags:
+  - name: DataCenterService
+paths:
+  /v1/data-centers:
+    get:
+      operationId: DataCenterService_ListDataCenters
+      responses:
+        "200":
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/v1ListDataCentersResponse"
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/rpcStatus"
+      parameters:
+        - name: pageToken
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: pageSize
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int32
+      tags:
+        - DataCenterService
+    post:
+      operationId: DataCenterService_CreateDataCenter
+      responses:
+        "200":
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/v1DataCenter"
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/rpcStatus"
+      requestBody:
+        $ref: "#/components/requestBodies/v1DataCenter"
+      tags:
+        - DataCenterService
+  "/v1/data-centers/{dataCenter.id}":
+    put:
+      operationId: DataCenterService_UpdateDataCenter
+      responses:
+        "200":
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/v1DataCenter"
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/rpcStatus"
+      parameters:
+        - name: dataCenter.id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: updateMask
+          in: query
+          required: false
+          schema:
+            type: string
+      requestBody:
+        $ref: "#/components/requestBodies/v1DataCenter"
+      tags:
+        - DataCenterService
+    patch:
+      operationId: DataCenterService_UpdateDataCenter2
+      responses:
+        "200":
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/v1DataCenter"
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/rpcStatus"
+      parameters:
+        - name: dataCenter.id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: updateMask
+          in: query
+          required: false
+          schema:
+            type: string
+      requestBody:
+        $ref: "#/components/requestBodies/v1DataCenter"
+      tags:
+        - DataCenterService
+  "/v1/data-centers/{id}":
+    get:
+      operationId: DataCenterService_GetDataCenter
+      responses:
+        "200":
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/v1DataCenter"
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/rpcStatus"
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      tags:
+        - DataCenterService
+    delete:
+      operationId: DataCenterService_DeleteDataCenter
+      responses:
+        "200":
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                properties: {}
+        default:
+          description: An unexpected error response.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/rpcStatus"
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      tags:
+        - DataCenterService
+servers:
+  - url: https://api.cudocompute.com
+components:
+  requestBodies:
+    v1DataCenter:
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/v1DataCenter"
+      required: true
+  schemas:
+    protobufAny:
+      type: object
+      properties:
+        "@type":
+          type: string
+      additionalProperties: {}
+    rpcStatus:
+      type: object
+      properties:
+        code:
+          type: integer
+          format: int32
+        message:
+          type: string
+        details:
+          type: array
+          items:
+            $ref: "#/components/schemas/protobufAny"
+    v1DataCenter:
+      type: object
+      properties:
+        id:
+          type: string
+          readOnly: true
+        name:
+          type: string
+        regionId:
+          type: string
+        billingAccountId:
+          type: string
+    v1ListDataCentersResponse:
+      type: object
+      properties:
+        dataCenters:
+          type: array
+          items:
+            $ref: "#/components/schemas/v1DataCenter"
+        pageToken:
+          type: string
+        pageSize:
+          type: integer
+          format: int32
