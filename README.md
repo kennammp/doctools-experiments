@@ -1,4 +1,3 @@
-# cudo-compute-beta-docs-test
+# Doctools Experiments
 
-Repository for cudo compute beta experimental docs site
-
+A repo to mess about with Documentation tools such as Docusaurus and Netlify
