@@ -52,6 +52,10 @@ const config = {
           routePath: "/api/specs/apispec2",
           spec: "uspto.yaml",
          },
+         {
+          routePath: "/api/specs/apispec2",
+          spec: "account-service-public.yaml",
+         },
        ],
      },
    ],
