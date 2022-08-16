@@ -61,11 +61,7 @@ const config = {
     /** @type {import('@docusaurus/preset-classic').ThemeConfig} */
     ({
       navbar: {
-        title: 'Compute Beta Docs DRAFT',
-        logo: {
-          alt: 'My Site Logo',
-          src: 'img/CudosIconTransparent.png',
-        },
+        title: 'Matts sandbox site',
         
         items: [
           /*
