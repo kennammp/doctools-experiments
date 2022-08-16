@@ -6,7 +6,7 @@ const darkCodeTheme = require('prism-react-renderer/themes/dracula');
 
 /** @type {import('@docusaurus/types').Config} */
 const config = {
-  title: 'Compute Beta',
+  title: 'Docusaurus Experiments',
   url: 'https://cdcompute-beta-draft-docs.netlify.app',
   baseUrl: '/',
   onBrokenLinks: 'throw',
@@ -61,7 +61,7 @@ const config = {
     /** @type {import('@docusaurus/preset-classic').ThemeConfig} */
     ({
       navbar: {
-        title: 'Matts sandbox site',
+        title: 'Matts Docusaurus Experiments',
         
         items: [
           /*
