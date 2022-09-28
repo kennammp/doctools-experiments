@@ -22,8 +22,9 @@ const config = {
       /** @type {import('docusaurus-preset-openapi').Options} */
       ({
         api: {
-          id: 'accounts', // omitted => default instance
-          path: 'schema/accounts/openapi.yaml',
+          id: 'accounts', // omitted => default instance,
+          // path: './schema/accounts/openapi.yaml',
+          path: './schema/accounts/openapi.yaml',
           routeBasePath: 'accounts',
         },
         docs: {
