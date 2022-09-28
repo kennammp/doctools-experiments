@@ -1,7 +1,17 @@
 {
-  "name": "cudocomputebetatest",
+  "name": "testsite",
   "version": "0.0.0",
   "private": true,
+  "dependencies": {
+    "@docusaurus/core": "^2.0.0",
+    "@mdx-js/react": "^1.6.21",
+    "clsx": "^1.1.1",
+    "docusaurus-preset-openapi": "0.6.1",
+    "prism-react-renderer": "^1.2.1",
+    "react": "^17.0.1",
+    "react-dom": "^17.0.1",
+    "url": "^0.11.0"
+  },
   "scripts": {
     "docusaurus": "docusaurus",
     "start": "docusaurus start",
@@ -12,18 +22,6 @@
     "serve": "docusaurus serve",
     "write-translations": "docusaurus write-translations",
     "write-heading-ids": "docusaurus write-heading-ids"
-  },
-  "dependencies": {
-    "@docusaurus/core": "2.0.0-beta.16",
-    "@docusaurus/preset-classic": "2.0.0-beta.16",
-    "@mdx-js/react": "^1.6.22",
-    "clsx": "^1.1.1",
-    "docusaurus-plugin-openapi": "^0.6.2",
-    "docusaurus-preset-openapi": "^0.6.2",
-    "prism-react-renderer": "^1.2.1",
-    "react": "^17.0.1",
-    "react-dom": "^17.0.1",
-    "redocusaurus": "^0.9.0"
   },
   "browserslist": {
     "production": [

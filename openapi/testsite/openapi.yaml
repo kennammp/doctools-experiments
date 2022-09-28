@@ -1,0 +1,899 @@
+openapi: "3.0.3"
+info:
+  title: Manage your Account
+  description: |
+    Create and manage accounts and site addresses. Accounts are used to initiate APIs to utilize the software service for all Alef services including but not limited to creating and provisioning networks, configuring the network and managing UEs and enforcing traffic controls at Alef platforms. <br/>
+    Customer Sites are those customer premises where the Radio Access Network (RAN) consists of the eNodeB Access Points (eNB APs) are deployed, which then is connected to the Alef Edge Point (AEP) for establishing the full mobile network system with the cloud based core and the transport to the core. 
+  version: "1.1.0"
+  contact:
+    name: Alef Edge
+    url: https://www.alefedge.com/developers/
+servers:
+  - url: https://api.alefedge.com
+    description: Production Environment
+  - url: https://api.stage.alefedge.com
+    description: Staging Environment
+  - url: https://api.integration.alefedge.com
+    description: Integration Environment
+tags:
+  - name: Manage your account
+    description: Get and update information for your account
+  - name: Set up and manage sites
+    description: Create, view, and manage site addresses where networks are or will be provisioned.
+paths:
+  /connectivity/v1/account:
+    get:
+      operationId: getAccountDetail
+      summary: Get Account Details
+      description: |
+        Returns detailed information about the account associated with the API key provided.
+      security:
+        - ApiKeyAuth: []
+      tags:
+        - Manage your account
+
+      responses:
+        "200":
+          description: The detailed overview of this account. See schema for more info.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Account"
+        "401":
+          $ref: '#/components/responses/UnauthorizedResponse'
+        "500":
+          $ref: "#/components/responses/ServerErrorResponse"
+
+    put:
+      tags:
+        - Manage your account
+      operationId: updateAccount
+      # Updates the account associated with this API key
+      summary: Update Account Details
+
+      description: |
+        Use this API to update amenable relevant account information. 
+      security:
+        - ApiKeyAuth: []
+      requestBody:
+        description: "The desired updates for this account."
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateAccountRequest"
+
+      responses:
+        "201":
+          description: Account updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UpdateAccountResponse'
+        "400":
+          $ref: '#/components/responses/BadRequestResponse'
+        "401":
+          $ref: '#/components/responses/UnauthorizedResponse'
+                  
+        "409":
+          description: Duplicate - Record with this email already exists. Request could not be processed.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples: 
+                Invalid Address ID:
+                  value: 
+                    message: Invalid address_id"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              examples:
+                Internal server error:
+                  value:
+                    message: Internal server error.
+                API gateway error:
+                  value:
+                    message: API gateway error.
+
+  /connectivity/v1/account/customersiteaddress:
+    post:
+      operationId: createCustomerSiteAddress
+      summary: Create a Customer Site
+      description: | 
+        A Customer Site must be created before the set up network connectivity API can be called to provision the interconnections between the Customer Site and the serving AEP.  
+        Each enterprise customer can have one private mobile network to be created, and all Customer Sites of the same customer connected to any AEP will be part of the same private mobile network.
+      security:
+        - ApiKeyAuth: []
+      tags:
+        - Set up and manage sites
+      requestBody:
+        description: "Site address location details"
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateSiteAddressRequest"
+      responses:
+        "200":
+          description: "Customer site address created successfully. The `customer_site_address_id` can be used to access it."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CreateAddressResponse"
+        "401":
+          $ref: '#/components/responses/UnauthorizedResponse'
+        "400":
+          $ref: '#/components/responses/BadRequestResponse'
+        "409":
+          description: Resource conflict - this request would create duplicate objects
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                Duplicate Site Name:
+                  value:
+                    message: Duplicate customer_site_name
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples: 
+                Invalid Account Name:
+                  value: 
+                    message: Invalid account_name
+        "500":
+          $ref: "#/components/responses/ServerErrorResponse"
+    get:
+      operationId: listCustomerSiteAddresses
+      summary: Get all Customer Sites
+      description: |
+        This API will return all, or a filtered subset of, customer sites of the account. 
+        The input parameters can help filter and/or sort the results.
+      security:
+        - ApiKeyAuth: []
+      tags:
+        - Set up and manage sites
+      parameters:
+        - in: query
+          name: limit
+          description: Set the max size of results
+          schema:
+            type: integer
+          required: false
+        - in: query
+          name: offset
+          description: Skip this number of items before returning results. 
+          schema:
+            type: integer
+          required: false
+        - in: query
+          name: sort_by_attribute
+          description: Field to sort by. Will order results by the selected field. 
+          schema:
+            type: string
+            enum: [created_at, updated_at]
+          required: false
+        - in: query
+          name: sort_by_order
+          description: Sort order. Requires sort_by. Will default to desc.
+          schema:
+            type: string
+            enum: [asc, desc]
+          required: false
+        - in: query
+          name: customer_site_id
+          description: Returns only the site with the provided id.
+          schema:
+            type: string
+          required: false
+        - in: query
+          name: customer_site_name
+          description: Returns only the site with the provided customer_site_name.
+          schema:
+            type: string
+          required: false
+        - in: query
+          name: is_default_shipping_address
+          description: Return only the default shipping address.
+          schema:
+            type: boolean
+            enum: [true, false]
+          required: false
+        - in: query
+          description: Return only addresses created after this date.
+          name: created_after
+          schema:
+            type: string
+          required: false
+        - in: query
+          name: created_before
+          description: Return only addresses created before this date.
+          schema:
+            type: string
+          required: false
+        - in: query
+          name: updated_after
+          description: Return only addresses updated after this date.
+          schema:
+            type: string
+          required: false
+        - in: query
+          name: updated_before
+          description: Return only addresses updated before this date.
+          schema:
+            type: string
+          required: false
+        - in: query
+          name: email
+          description: Return only addresses associated with this email address
+          schema:
+            type: string
+          required: false
+
+      responses:
+        "200":
+          description: OK - Found customer sites
+          content:
+            application/json:
+              examples:
+                All Customer Sites:
+                  value:
+                    [
+                      {
+                        "customer_site_id": "62331dad80f158e5e72ad4c1",
+                        "customer_site_name": "los-angeles site",
+                        "account_name": "disney",
+                        "email": "rock@disney.com",
+                        "customer_site_address":
+                          {
+                            "line1": "Spadena House",
+                            "line2": "516 Walden Dr",
+                            "city": "Beverly Hills",
+                            "state": "CA",
+                            "country": "US",
+                            "postal_code": 90210,
+                          },
+                      },
+                    ]
+        "400":
+          description: Bad Request - Check the `message` field for more information
+          content:
+            application/json:
+              examples:
+                Invalid Sort Attribute:
+                  value: 
+                    - message: Invalid sort_by_attribute
+                Invalid Customer Site Name:
+                  value: 
+                    - message: invalid customer_site_name
+        "401":
+          $ref: '#/components/responses/UnauthorizedResponse'
+        "404":
+          description: Not found - no site addresses matching the filter could be found, or there are no site addresses for this account.
+          content:
+            application/json:
+              examples:
+                No Site Addresses Found:
+                  value:
+                    message: Record not found.
+        "500":
+          $ref: "#/components/responses/ServerErrorResponse"
+
+  /connectivity/v1/account/customersiteaddress/{address_id}:
+    get:
+      summary: Get a Customer Site Details
+      description: | 
+        This API will return the details of the Customer Site information for the given Customer Site ID. Returns a 404 error if no Customer Site is found.
+        Suggest changing the "address_id" to "customer_Site_id".  There are many different addresses: company/account address, shipping address and customer site address.
+      
+      security:
+        - ApiKeyAuth: []
+      tags:
+        - Set up and manage sites
+      operationId: getAddress
+      parameters:
+        - in: path
+          name: address_id
+          description: The id of the address to be retrieved.
+          schema:
+            type: string
+          required: true
+      responses:
+        "200":
+          description: OK - Found site details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GetAddressRequest"
+        "401":
+          $ref: '#/components/responses/UnauthorizedResponse'
+        "404":
+          description: Not found - no site addresses matching the filter could be found, or there are no site addresses for this account.
+          content:
+            application/json:
+              examples:
+                No Site Addresses Found:
+                  value:
+                    message: Address not found.
+        
+        "500":
+          $ref: "#/components/responses/ServerErrorResponse"
+
+    put:
+      operationId: updateCustomerSiteAddress
+      summary: Update a Customer Site
+      description: | 
+        Update the customer cite information for a given customer site ID. Cannot match any other customer site. 
+      security:
+        - ApiKeyAuth: []
+      tags:
+        - Set up and manage sites
+      parameters:
+        - in: path
+          name: address_id
+          description: The id of the siteaddress to be updated.
+          schema:
+            type: string
+          required: true
+      requestBody:
+        description: "update customer site address"
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateAddressRequest"
+      responses:
+        "200":
+          description: "Customer site address updated successfully"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UpdateAddressResponse"
+    
+        "400":
+          $ref: "#/components/responses/BadRequestResponse"
+
+        "401":
+          $ref: '#/components/responses/UnauthorizedResponse'
+          
+        "404":
+          description: Not Found - A site address matching this could not be found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "409":
+          description: Duplicate record - this update would create duplicate addresses.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                Customer site name already exists:
+                  value: 
+                    message: Provided customer_site_name already exists.
+        
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                Invalid address ID:
+                  value:
+                    message: Invalid address_id.
+                Invalid postal code:
+                  value:
+                    message: Invalid postal_code
+        "500":
+          $ref: "#/components/responses/ServerErrorResponse"
+
+    delete:
+      summary: Delete address
+      description: |
+        Delete the customer site with the given id. 
+      security:
+        - ApiKeyAuth: []
+      tags:
+        - Set up and manage sites
+      operationId: deleteAddress
+      parameters:
+        - in: path
+          name: address_id
+          schema:
+            type: string
+          required: true
+      responses:
+        "200":
+          description: Address deleted successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        
+        "400":
+          $ref: '#/components/responses/BadRequestResponse'
+
+        "401":
+          $ref: '#/components/responses/UnauthorizedResponse'  
+        "404":
+          description: Not Found - A site address matching this could not be found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                Site Address Not Found: 
+                  value:
+                    message: Record not found
+
+        "500":
+          $ref: "#/components/responses/ServerErrorResponse"
+
+components:
+  schemas:
+    UpdateAccountRequest:
+      type: object
+      properties:
+        account_name:
+          description: The name of the enterprise that controls this account.  Provide a new name if an update is required.
+          type: string
+
+        account_address:
+          # Can be different than site address and billing address
+          description: Provide the new address of the account if an update is required. 
+          type: array
+          items:
+            $ref: "#/components/schemas/SiteAddress"
+
+        billing_entity:
+          # The name of the party responsible for billing for this account
+          description: Name of the entity responsible for billing for this account.
+          type: string
+
+        billing_address:
+          description: The address of the billing entity. Provide the new address of the billing entity if an update is required. 
+          type: array
+          items:
+            $ref: "#/components/schemas/SiteAddress"
+  
+        billing_contact:
+          description: The contact person of the billing entity for any billing issues. Provide the new billing contact if an update is required. 
+          type: array
+          items:
+            $ref: "#/components/schemas/BillingContact"
+
+        api_key_replacement:
+          # If true, invalidate existing key for this account and issue a new key. This key will come in the body as api_key. additionally, the user will receive a notification email with the new api_key.
+          description: |
+            If set to true, a new API key for this account shall be generated to replace the existing API key. 
+            This new API key will return in the response, as well as in an email.
+          type: boolean
+          default: false
+
+      example:
+        account_name: "ACloudenterprise Inc."
+        billing_address:
+          [
+            {
+              "_id": 4ede53ef9d40c867620fb120,
+              "line1": "7 Mayfield Tower",
+              "line2": "100 Main St",
+              "city": "Columbus",
+              "state": "OH",
+              "postal_code": 41048,
+              "country": "US",
+            },
+          ]
+        account_address:
+          [
+            {
+              "_id": 53ef90fbd40c867624ede120,
+              "line1": "7 Mayfield Tower",
+              "line2": "100 Main St",
+              "city": "Columbus",
+              "state": "OH",
+              "postal_code": 41048,
+              "country": "US",
+            },
+          ]
+        billing_entity: "ACloudenterprise Inc."
+        billing_contact:
+          [
+            {
+              _id: d40c867624ede53ef90fb120,
+              email: "john@doe.com",
+              name: "John Doe",
+              contact_number: "+1 9999994949",
+            },
+          ]
+        api_key_replacement: true
+
+    UpdateAccountResponse:
+      type: object
+      properties:
+        account_name:
+          description: The name of the enterprise that the account is being created for.
+          type: string
+        email:
+          description: The email address of the primary contact for this account.
+          type: string
+        name:
+          description: The name of the primary contact for this account.
+          type: string
+        contact_number:
+          description: The contact phone number for the primary contact of this account.
+          type: string
+        billing_address:
+          description: Address of the entity responsible for billing.
+          type: array
+          items:
+            $ref: "#/components/schemas/SiteAddress"
+        account_address:
+          description: Root address for this account. Does not have to be billing or site address.
+          type: array
+          items:
+            $ref: "#/components/schemas/SiteAddress"
+        contract_id:
+          description: Unique ID used to represent this account.
+          type: string
+        billing_entity:
+          description: Name of the entity responsible for billing for this account.
+          type: string
+        billing_contact:
+          description: Contact information for the billing entity.
+          type: array
+          items:
+            $ref: "#/components/schemas/BillingContact"
+        api_key:
+          description: API key used to access Alef APIs. Only present if api_key_replacement field was set to `true`.
+          # ONLY come if the api_key_replacement field is true
+          type: string
+
+      example:
+        account_name: "ACloudenterprise Inc."
+        email: "john@doe.com"
+        name: "John Doe"
+        contact_number: "+1 9999994949"
+        billing_address:
+          [
+            {
+              "_id": 4ede53ef9d40c867620fb120,
+              "line1": "7 Mayfield Tower",
+              "line2": "100 Main St",
+              "city": "Columbus",
+              "state": "OH",
+              "postal_code": 41048,
+              "country": "US",
+            },
+          ]
+        account_address:
+          [
+            {
+              "_id": 53ef90fbd40c867624ede120,
+              "line1": "7 Mayfield Tower",
+              "line2": "100 Main St",
+              "city": "Columbus",
+              "state": "OH",
+              "postal_code": 41048,
+              "country": "US",
+            },
+          ]
+        contract_id: "90fb120d40cde53ef867624e"
+        billing_entity: "ACloudenterprise Inc."
+        billing_contact:
+          [
+            {
+              _id: d40c867624ede53ef90fb120,
+              email: "john@doe.com",
+              name: "John Doe",
+              contact_number: "+1 9999994949",
+            },
+          ]
+        api_key: 53cef96775300f621286bd408
+
+    BillingContact:
+      type: object
+      properties:
+        _id:
+          description: ID for this contact in the Alef system
+          type: string
+        name:
+          description: The name for this contact.
+          type: string
+        email:
+          description: The primary email of this contact.
+          type: string
+        contact_number:
+          description: The primary phone number for this contact
+          type: string
+      example:
+        _id: d40c867624ede53ef90fb120
+        email: "john@doe.com"
+        name: "John Doe"
+        contact_number: "+1 9999994949"
+
+    CreateSiteAddressRequest:
+      type: object
+      required:
+        - customer_site_name
+        - customer_site_address
+        - contact_details
+        - is_default_shipping_address
+      properties:
+        customer_site_name:
+          description: Unique name used to refer to the customer site.
+          type: string
+        customer_site_address:
+          $ref: "#/components/schemas/Address"
+        contact_details:
+          $ref: "#/components/schemas/ContactDetails"
+        is_default_shipping_address:
+          description: If true, make this the default shipping address for physical sims.
+          default: true
+          type: boolean
+      example:
+        customer_site_name: NYC east office site
+        customer_site_address:
+          line1: "7 Mayfield Tower"
+          line2: "100 Main St"
+          city: "Hebron"
+          state: "KY"
+          postal_code: 41048
+          country: "US"
+        contact_details:
+          name: Alex Hales
+          phone_number: "+19999999999"
+          email: jamicoc358@angeleslid.com
+        is_default_shipping_address: true
+
+    Address:
+      type: object
+      properties:
+        line1:
+          type: string
+        line2:
+          type: string
+        city:
+          type: string
+        state:
+          type: string
+        postal_code:
+          type: integer
+        country:
+          type: string
+      example:
+        line1: "7 Mayfield Tower"
+        line2: "100 Main St"
+        city: "Columbus"
+        state: "OH"
+        postal_code: 41048
+        country: "USA"
+
+    SiteAddress:
+      type: object
+      properties:
+        _id:
+          type: string
+        line1:
+          type: string
+        line2:
+          type: string
+        city:
+          type: string
+        state:
+          type: string
+        postal_code:
+          type: integer
+        country:
+          type: string
+      example:
+        _id: d40c867624ede53ef90fb120
+        line1: "7 Mayfield Tower"
+        line2: "100 Main St"
+        city: "Columbus"
+        state: "OH"
+        postal_code: 41048
+        country: "USA"
+
+    GetAddressRequest:
+      type: object
+      properties:
+        customer_site_address:
+          $ref: "#/components/schemas/Address"
+        contact_details:
+          $ref: "#/components/schemas/ContactDetails"
+        customer_site_name:
+          type: string
+        is_default_shipping_address:
+          type: boolean
+        createdAt:
+          type: string
+        updatedAt:
+          type: string
+        _id:
+          type: string
+      example:
+        customer_site_address:
+          line1: 7 Mayfield Tower
+          line2: 100 Main St
+          city: Hebron
+          state: KY
+          country: US
+          postal_code: 41048
+        contact_details:
+          name: Me myself
+          phone_number: "+19999999999"
+          email: dasive5360@hbehs.com
+        _id: 62850eb8ded64579f4edaf8a
+        customer_site_name: NYC east office site
+        is_default_shipping_address: true
+        createdAt: "2022-05-18T15:20:24.506Z"
+        updatedAt: "2022-05-18T15:20:24.506Z"
+
+    ContactDetails:
+      type: object
+      required:
+        - name
+        - phone_number
+        - email
+      properties:
+        name:
+          type: string
+        phone_number:
+          type: string
+        email:
+          type: string
+
+    CreateAddressResponse:
+      type: object
+      properties:
+        customer_site_address_id:
+          type: string
+        createdAt:
+          type: string
+      example:
+        customer_site_address_id: "4edd40c86762e0fb12000003"
+        createdAt: "2022-03-11T06:15:15.258Z"
+
+    Account:
+      type: object
+      properties:
+        account_id:
+          description: Unique ID in the Alef system.
+          type: string
+          example: "628f23c7482025cad3a6c787"
+        account_name:
+          description: The name of the enterprise controlling this account.
+          type: string
+          example: "ACloudenterprise Inc"
+        account_address:
+          # description: Primary address for the account. Can be different from site address and billing address.
+          $ref: "#/components/schemas/Address"
+        billing_address:
+          # description: Address for the entity responsible for billing for this account.
+          $ref: "#/components/schemas/Address"
+        contract_id:
+          # Appears to be a UUID for this account? to be used with 3rd parties
+          description: Unique ID used to represent this account
+          type: string
+          example: d40c867624ede53ef90fb120
+        billing_entity:
+          description: The name of the party responsible for billing for this account.
+          type: string
+          example: ACloudenterprise Inc.
+        billing_contact:
+          description: The contact responsbile for billing concerns for this account.
+          type: array
+          items:
+            $ref: "#/components/schemas/BillingContact"
+
+    UpdateAddressRequest:
+      type: object
+      properties:
+        customer_site_name:
+          description: "The name for customer site"
+          type: string
+        customer_site_address:
+          $ref: "#/components/schemas/Address"
+        contact_details:
+          $ref: "#/components/schemas/ContactDetails"
+        is_default_shipping_addess:
+          description: "Default Shipping Addreses"
+          type: string
+      example:
+        customer_site_name: "NYC east office site"
+        customer_site_address:
+          line1: "7 Mayfield Tower"
+          line2: "100 Main St"
+          city: "Columbus"
+          state: "OH"
+          postal_code: 41048
+          country: "USA"
+        contact_details:
+          name: "jhon"
+          phone_number: "+19999999999"
+          email: "jhon@emails.com"
+        is_default_shipping_address: true
+
+    UpdateAddressResponse:
+      type: object
+      properties:
+        customer_site_address_id:
+          description: The ID for customer site address
+          type: string
+        updated_at:
+          description: The customer site address updation timestamp
+          type: string
+      example:
+        customer_site_address_id: "4edd40c86762e0fb12000777"
+        updated_at: "2022-03-11T06:15:15.258Z"
+
+    ErrorResponse:
+      properties:
+        message: 
+          type: string
+          description: Provides additional details about the error.
+  responses:
+    BadRequestResponse:
+      description: This request has invalid synax or could not be parsed. See body for more details.
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+          examples:
+            Request Body Invalid:
+              value:
+                message: Invalid request body.
+    
+    ServerErrorResponse:
+      description: There was an unexpected error while processing the request.
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+          example:
+            message: Internal server error.
+
+    UnauthorizedResponse:
+      description: This requester does not have valid authorization to perform this action.
+      content:  
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+          examples:
+            API Key is Invalid:
+              description: The api key didn't authenticate, either because it's malformed or it's in the incorrect format.
+              value:
+                message: Authorization Error
+            API Key is Missing:
+              description: The API key was not included in the request, so the request is unauthenticated.
+              value:
+                message: No API key found in request
+  securitySchemes:
+    ApiKeyAuth:
+      description: Request must include the APIKey issues for the requesting account.
+      type: apiKey
+      in: query
+      name: Authorization
